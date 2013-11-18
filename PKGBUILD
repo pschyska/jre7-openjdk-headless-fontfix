@@ -2,9 +2,12 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 # Maintainer: Guillaume ALAUX <guillaume@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
+# AUR
+# original patch from https://gist.github.com/aleksandara/2963640
+# re-applied to jre7-openjdk-headless-7.u45_2.4.3
 
-pkgname=('jre7-openjdk-headless' 'jre7-openjdk' 'jdk7-openjdk' 'openjdk7-src' 'openjdk7-doc')
-pkgbase=java7-openjdk
+# pkgname=('jre7-openjdk-headless' 'jre7-openjdk' 'jdk7-openjdk' 'openjdk7-src' 'openjdk7-doc')
+pkgname=jre7-openjdk-headless-fontfix
 _java_ver=7
 _icedtea_ver=2.4.3
 
@@ -22,7 +25,7 @@ _HOTSPOT_CHANGESET=b59e02d9e72b # see "${srcdir}/icedtea-${_icedtea_ver}"/hotspo
 _bootstrap=0 # 0/1 for quick build or full bootstrap
 
 pkgver=${_java_ver}.u${_JDK_UPDATE_VERSION}_${_icedtea_ver}
-pkgrel=1
+pkgrel=1.2
 arch=('i686' 'x86_64')
 url="http://icedtea.classpath.org"
 license=('custom')
@@ -46,7 +49,8 @@ source=(http://icedtea.classpath.org/download/source/icedtea-${_icedtea_ver}.tar
         jdk7-openjdk.profile
         jdk7-openjdk.profile.csh
         jre7-openjdk.profile
-        jre7-openjdk.profile.csh)
+        jre7-openjdk.profile.csh
+        fontfix.diff)
 sha256sums=('15b1acc1fb43b83ca08d531491261c5eeaea4cad3598300074692acea93bdd3d'
             '75a18abd117e3295c6de4d3450f0094a9abc08f2168e2911bce25d1e153107b9'
             '7fab9af64ffcdf635a6fed5abf78cffd1f64be1f3827a1aaf3a0e5e1fdbc599c'
@@ -60,7 +64,8 @@ sha256sums=('15b1acc1fb43b83ca08d531491261c5eeaea4cad3598300074692acea93bdd3d'
             'bd55299e08e6f8e61ba5baad0990170891801a29a1e8137e502b5e8a10fc37ea'
             '3f28f8bfc6dd105a07f747d7135c77a77de433e2b8647dd7520a900135203fbd'
             'b7c045b08ad55a9f79390c104fa846d0e7dbb49fccffb2fab2a3824b6b19c9c8'
-            '89d99d8ac269ca66e2e279aff652d5aac938a35faec93cd8cff8f048052bd3ce')
+            '89d99d8ac269ca66e2e279aff652d5aac938a35faec93cd8cff8f048052bd3ce'
+            '585e22d4eea2793798cef4d41dcfd29c5f589ec12ff7e737ac6aae926655d2dd')
 
 noextract=("${_OPENJDK_CHANGESET}.tar.gz"
            "${_CORBA_CHANGESET}.tar.gz"
@@ -85,7 +90,8 @@ build() {
 
   cp ${srcdir}/*.diff ${srcdir}/icedtea-${_icedtea_ver}/patches
   export DISTRIBUTION_PATCHES="patches/fontconfig-paths.diff \
-                               patches/openjdk7_nonreparenting-wm.diff"
+                               patches/openjdk7_nonreparenting-wm.diff \
+                               patches/fontfix.diff"
 
   if [ "$_bootstrap" = "1" ]; then
      BOOTSTRAPOPT="--enable-bootstrap --with-ecj-jar=/usr/share/java/ecj.jar"
@@ -119,14 +125,15 @@ check() {
   make -k check
 }
 
-package_jre7-openjdk-headless() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs"
+#package_jre7-openjdk-headless() {
+package() {
+  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs - with fontfix patch"
   depends=('libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
   optdepends=('libcups: needed for Java Mauve support - libmawt.so'
               'fontconfig: needed for Java Mauve support - libmawt.so'
               'java-rhino: for some JavaScript support')
-  provides=('java-runtime-headless=7')
-  conflicts=('openjdk6')
+  provides=('java-runtime-headless=7' 'jre7-openjdk-headless')
+  conflicts=('openjdk6' 'jre7-openjdk-headless')
   backup=(etc/profile.d/jre.sh
           etc/profile.d/jre.csh
           etc/java-7-openjdk/calendars.properties
@@ -246,7 +253,8 @@ package_jre7-openjdk-headless() {
      ln -vsf /etc/java-7-openjdk/jvm.cfg .
   popd
 }
-	 
+
+# original package was a split package. The following functions are not used
 package_jre7-openjdk() {
   pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Full Java runtime environment - needed for executing Java GUI and Webstart programs"
   depends=('jre7-openjdk-headless' 'xdg-utils' 'hicolor-icon-theme')
