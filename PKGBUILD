@@ -25,7 +25,7 @@ _HOTSPOT_CHANGESET=b59e02d9e72b # see "${srcdir}/icedtea-${_icedtea_ver}"/hotspo
 _bootstrap=0 # 0/1 for quick build or full bootstrap
 
 pkgver=${_java_ver}.u${_JDK_UPDATE_VERSION}_${_icedtea_ver}
-pkgrel=1.2
+pkgrel=1.3
 arch=('i686' 'x86_64')
 url="http://icedtea.classpath.org"
 license=('custom')
@@ -127,7 +127,7 @@ check() {
 
 #package_jre7-openjdk-headless() {
 package() {
-  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs - with fontfix patch"
+  pkgdesc="Free Java environment based on OpenJDK 7.0 with IcedTea7 replacing binary plugs - Minimal Java runtime - needed for executing non GUI Java programs - with fontfix patch. https://github.com/pschyska/jre7-openjdk-headless-fontfix"
   depends=('libjpeg-turbo' 'lcms2' 'nss' 'ca-certificates-java')
   optdepends=('libcups: needed for Java Mauve support - libmawt.so'
               'fontconfig: needed for Java Mauve support - libmawt.so'
